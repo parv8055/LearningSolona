@@ -2,6 +2,7 @@ import "dotenv/config";
 import {
     Connection,
     Keypair,
+    PublicKey,
     SystemProgram,
     Transaction,
     clusterApiUrl,
@@ -13,7 +14,7 @@ import {
     createInitializeMint2Instruction,
     getMinimumBalanceForRentExemptMint,
 } from "@solana/spl-token";
-import { getKeypairFromEnvironment } from "@solana-developers/helpers";
+import { getExplorerLink, getKeypairFromEnvironment } from "@solana-developers/helpers";
 
 const senderKeypair = getKeypairFromEnvironment("SECRET_KEY");
 console.log("sender", senderKeypair.publicKey)
@@ -27,7 +28,7 @@ const mint = new Keypair();
 // Calculate minimum lamports for space required by mint account
 (async () => {
     const rentLamports = await getMinimumBalanceForRentExemptMint(connection);
-console.log("rent" , rentLamports)
+
     // Instruction to create a new account with space for the new mint account
     const createAccountInstruction = SystemProgram.createAccount({
         fromPubkey: wallet.publicKey,
@@ -37,9 +38,6 @@ console.log("rent" , rentLamports)
         programId: TOKEN_2022_PROGRAM_ID,
     });
 
-    // console.log("createAccountInstruction",createAccountInstruction);
-
-
     // Instruction to initialize mint account
 const initializeMintInstruction = createInitializeMint2Instruction(
     mint.publicKey,
@@ -48,7 +46,6 @@ const initializeMintInstruction = createInitializeMint2Instruction(
     wallet.publicKey, // freeze authority
     TOKEN_2022_PROGRAM_ID,
 );
-// console.log("initializeMintInstruction",initializeMintInstruction)
 
 // Build transaction with instructions to create new account and initialize mint account
 const transaction = new Transaction().add(
@@ -67,9 +64,6 @@ console.log(
     "\nTransaction Signature:",
     `https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana`,
 )
-
-
-// GFCndhfsKUNgzq4incy8KA13jqu3736zK9NM7sZRYVd4
 
 console.log(
     "\nMint Account:",
